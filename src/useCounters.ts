@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { Counter, CounterType, Screen, Variant } from './types';
+import { ensureHistory } from './counterLogic';
 
 interface State {
   screen: Screen;
@@ -7,6 +8,7 @@ interface State {
   nextId: number;
   selectedId: number;
   showResetConfirm: boolean;
+  showDeleteConfirm: boolean;
   formType: CounterType | null;
   formName: string;
   formMax: string;
@@ -34,10 +36,11 @@ export function useCounters() {
   const saved = loadState();
   const [state, setStateRaw] = useState<State>({
     screen: 'list',
-    counters: saved.counters ?? DEFAULT_COUNTERS,
+    counters: (saved.counters ?? DEFAULT_COUNTERS).map(ensureHistory),
     nextId: saved.nextId ?? 4,
     selectedId: saved.selectedId ?? 2,
     showResetConfirm: false,
+    showDeleteConfirm: false,
     formType: null,
     formName: '',
     formMax: '',

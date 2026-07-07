@@ -3,8 +3,10 @@ import { useCounters } from './useCounters';
 import { ListScreen } from './components/ListScreen';
 import { CreateScreen } from './components/CreateScreen';
 import { DetailScreen } from './components/DetailScreen';
+import { HistoryScreen } from './components/HistoryScreen';
 import { VariantPicker } from './components/VariantPicker';
 import type { CounterType, Variant } from './types';
+import { applyIncrement, applyDecrement, applyReset, deleteHistoryEntry } from './counterLogic';
 
 export default function App() {
   const { state, setState } = useCounters();
@@ -14,11 +16,23 @@ export default function App() {
   function handleCreate(name: string, type: CounterType, max: number) {
     const id = state.nextId;
     setState(s => ({
-      counters: [...s.counters, { id, name, type, max, value: 0 }],
+      counters: [...s.counters, { id, name, type, max, value: 0, history: {} }],
       nextId: id + 1,
       screen: 'detail',
       selectedId: id,
     }));
+  }
+
+  function handleDeleteCounter() {
+    setState(s => {
+      const counters = s.counters.filter(c => c.id !== s.selectedId);
+      return {
+        counters,
+        selectedId: counters[0]?.id ?? -1,
+        screen: 'list',
+        showDeleteConfirm: false,
+      };
+    });
   }
 
   return (
@@ -46,12 +60,25 @@ export default function App() {
               counter={selected}
               theme={theme}
               showResetConfirm={state.showResetConfirm}
-              onBack={() => setState({ screen: 'list', showResetConfirm: false })}
-              onIncrement={() => setState(s => ({ counters: s.counters.map(c => c.id === s.selectedId ? { ...c, value: Math.min(c.max, c.value + 1) } : c) }))}
-              onDecrement={() => setState(s => ({ counters: s.counters.map(c => c.id === s.selectedId ? { ...c, value: Math.max(0, c.value - 1) } : c) }))}
+              showDeleteConfirm={state.showDeleteConfirm}
+              onBack={() => setState({ screen: 'list', showResetConfirm: false, showDeleteConfirm: false })}
+              onIncrement={() => setState(s => ({ counters: s.counters.map(c => c.id === s.selectedId ? applyIncrement(c) : c) }))}
+              onDecrement={() => setState(s => ({ counters: s.counters.map(c => c.id === s.selectedId ? applyDecrement(c) : c) }))}
               onRequestReset={() => setState({ showResetConfirm: true })}
               onCancelReset={() => setState({ showResetConfirm: false })}
-              onConfirmReset={() => setState(s => ({ counters: s.counters.map(c => c.id === s.selectedId ? { ...c, value: 0 } : c), showResetConfirm: false }))}
+              onConfirmReset={() => setState(s => ({ counters: s.counters.map(c => c.id === s.selectedId ? applyReset(c) : c), showResetConfirm: false }))}
+              onOpenHistory={() => setState({ screen: 'history' })}
+              onRequestDelete={() => setState({ showDeleteConfirm: true })}
+              onCancelDelete={() => setState({ showDeleteConfirm: false })}
+              onConfirmDelete={handleDeleteCounter}
+            />
+          )}
+          {state.screen === 'history' && selected && (
+            <HistoryScreen
+              counter={selected}
+              theme={theme}
+              onBack={() => setState({ screen: 'detail' })}
+              onDeleteEntry={key => setState(s => ({ counters: s.counters.map(c => c.id === s.selectedId ? deleteHistoryEntry(c, key) : c) }))}
             />
           )}
         </div>

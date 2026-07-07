@@ -13,15 +13,18 @@ export function CreateScreen({ theme: t, onBack, onSubmit }: Props) {
   const [name, setName] = useState('');
   const [maxStr, setMaxStr] = useState('');
 
-  const isCustom = formType === 'custom';
-  const customMax = parseInt(maxStr, 10);
+  const max = parseInt(maxStr, 10);
   const nameOk = name.trim().length > 0;
-  const maxOk = !isCustom || (customMax >= 2 && customMax <= 9999);
+  const maxOk = max >= 2 && max <= 9999;
   const canSubmit = !!formType && nameOk && maxOk;
+
+  function handleSelectType(type: CounterType) {
+    setFormType(type);
+    setMaxStr(String(TYPE_MAX[type]));
+  }
 
   function handleSubmit() {
     if (!canSubmit || !formType) return;
-    const max = isCustom ? customMax : TYPE_MAX[formType];
     onSubmit(name.trim(), formType, max);
   }
 
@@ -48,13 +51,13 @@ export function CreateScreen({ theme: t, onBack, onSubmit }: Props) {
         <div style={{ fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(238,241,243,0.5)', margin: '10px 0' }}>Chọn loại</div>
 
         {(['frequency', 'daily', 'custom'] as CounterType[]).map(type => (
-          <div key={type} onClick={() => setFormType(type)}
+          <div key={type} onClick={() => handleSelectType(type)}
             style={{ border: borderFor(type), background: t.face, borderRadius: 14, padding: '14px 16px', marginBottom: 10, cursor: 'pointer' }}>
             <div style={{ fontSize: 15.5, fontWeight: 600 }}>
               {type === 'frequency' ? 'Tần suất theo ngày' : type === 'daily' ? 'Điểm danh theo ngày' : 'Tùy chỉnh'}
             </div>
             <div style={{ fontSize: 12.5, color: 'rgba(238,241,243,0.5)', marginTop: 3 }}>
-              {type === 'frequency' ? 'Đếm số lần trong ngày · thang 1–100' : type === 'daily' ? 'Đếm số ngày liên tiếp · thang 1–365' : 'Tự đặt giới hạn tối đa'}
+              {type === 'frequency' ? 'Đếm số lần mỗi ngày, lưu lịch sử theo ngày' : type === 'daily' ? 'Điểm danh mỗi ngày, lưu lịch sử theo ngày' : 'Bộ đếm tự do, không lưu lịch sử theo ngày'}
             </div>
           </div>
         ))}
@@ -65,13 +68,11 @@ export function CreateScreen({ theme: t, onBack, onSubmit }: Props) {
               <div style={{ fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(238,241,243,0.5)', marginBottom: 8 }}>Tên bộ đếm</div>
               <input value={name} onChange={e => setName(e.target.value)} placeholder="VD: Uống nước" style={inputStyle} />
             </div>
-            {isCustom && (
-              <div>
-                <div style={{ fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(238,241,243,0.5)', marginBottom: 8 }}>Giới hạn tối đa</div>
-                <input value={maxStr} onChange={e => setMaxStr(e.target.value)} type="number" min={2} max={9999} placeholder="VD: 30"
-                  style={{ ...inputStyle, fontFamily: "'JetBrains Mono',monospace" }} />
-              </div>
-            )}
+            <div>
+              <div style={{ fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(238,241,243,0.5)', marginBottom: 8 }}>Giới hạn tối đa</div>
+              <input value={maxStr} onChange={e => setMaxStr(e.target.value)} type="number" min={2} max={9999} placeholder="VD: 730"
+                style={{ ...inputStyle, fontFamily: "'JetBrains Mono',monospace" }} />
+            </div>
             <button onClick={handleSubmit} disabled={!canSubmit}
               style={{ marginTop: 6, background: t.accent, color: t.onAccent, opacity: canSubmit ? 1 : 0.45, border: 'none', borderRadius: 12, padding: 14, fontFamily: "'Oswald',sans-serif", fontSize: 15, fontWeight: 600, letterSpacing: 0.4, cursor: canSubmit ? 'pointer' : 'not-allowed' }}>
               Tạo bộ đếm

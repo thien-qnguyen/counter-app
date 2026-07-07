@@ -1,6 +1,6 @@
 export type CounterType = 'frequency' | 'daily' | 'custom';
 export type Variant = 'a' | 'b' | 'c';
-export type Screen = 'list' | 'create' | 'detail';
+export type Screen = 'list' | 'create' | 'detail' | 'history';
 
 export interface Counter {
   id: number;
@@ -8,6 +8,7 @@ export interface Counter {
   type: CounterType;
   max: number;
   value: number;
+  history?: Record<string, number>;
 }
 
 export interface Theme {
