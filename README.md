@@ -1,21 +1,18 @@
 # Bộ Đếm (Counter App)
 
-Ứng dụng đếm số (counter) xây dựng bằng React + TypeScript + Vite, được đóng gói bằng [Capacitor](https://capacitorjs.com) để chạy như app Android native. Bản web được deploy tự động lên GitHub Pages.
+Ứng dụng đếm số (counter) xây dựng bằng React + TypeScript + Vite, đóng gói bằng [Capacitor](https://capacitorjs.com) thành app Android native.
 
 ## Tech stack
 
 - React 19 + TypeScript
 - Vite 8 (build tool)
-- Oxlint (linting)
 - Capacitor 8 (`@capacitor/core`, `@capacitor/android`, `@capacitor/cli`) — wrap web app thành Android app
 
-## Phát triển (web)
+## Phát triển
 
 ```bash
 npm install
-npm run dev       # dev server có HMR
-npm run build      # build production vào dist/
-npm run preview    # preview bản build
+npm run dev       # dev server có HMR, xem giao diện trong trình duyệt
 npm run lint        # chạy oxlint
 ```
 
@@ -45,31 +42,8 @@ Thư mục `android/` là project Gradle được Capacitor sinh ra và commit v
 
 ## CI/CD
 
-Workflow `.github/workflows/deploy.yml` chạy khi push vào `master` (hoặc kích hoạt tay), gồm:
-
-- **`build` + `deploy`**: build web và deploy lên GitHub Pages.
-- **`build-android`**: build web, sync vào Android project, chạy `./gradlew assembleDebug`, rồi upload file APK làm artifact của workflow run (tab **Actions** → chọn run → mục **Artifacts**, tên `counter-app-debug-apk`).
+Workflow `.github/workflows/android.yml` chạy khi push vào `master` (hoặc kích hoạt tay): build web, sync vào Android project, chạy `./gradlew assembleDebug`, rồi upload file APK làm artifact của workflow run (tab **Actions** → chọn run → mục **Artifacts**, tên `counter-app-debug-apk`).
 
 ## Dependencies
 
-Toàn bộ thư viện npm và Gradle/Android đều là gói chính thức, có nguồn gốc rõ ràng (Meta/React, Ionic/Capacitor, Vite, Google AndroidX, JetBrains/Microsoft TypeScript...), không có gói lạ hay bị deprecated. Chạy `npm audit` định kỳ để kiểm tra lỗ hổng bảo mật.
-
-## Expanding the Oxlint configuration
-
-Nếu phát triển production app, nên bật type-aware lint rules bằng cách cài `oxlint-tsgolint` và sửa `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
-
-Xem thêm [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules).
+Toàn bộ thư viện npm và Gradle/Android đều là gói chính thức, có nguồn gốc rõ ràng (Meta/React, Ionic/Capacitor, Vite, Google AndroidX, Microsoft TypeScript...), không có gói lạ hay bị deprecated. Chạy `npm audit` định kỳ để kiểm tra lỗ hổng bảo mật.
