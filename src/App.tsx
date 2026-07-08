@@ -84,7 +84,18 @@ export default function App() {
 
   if (Capacitor.isNativePlatform()) {
     return (
-      <div style={{ width: '100vw', height: '100dvh', background: '#000', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div
+        style={{
+          width: '100vw',
+          height: '100dvh',
+          background: '#000',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          paddingTop: 'env(safe-area-inset-top)',
+          paddingBottom: 'env(safe-area-inset-bottom)',
+        }}
+      >
         <VariantPicker current={state.variant} onChange={(v: Variant) => setState({ variant: v })} theme={theme} />
         <div style={{ flex: 1, minHeight: 0 }}>{screens}</div>
       </div>
