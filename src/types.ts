@@ -1,4 +1,5 @@
 export type CounterType = 'frequency' | 'daily' | 'custom';
+export type TrackingMode = 'frequency' | 'daily' | 'none';
 export type Variant = 'a' | 'b' | 'c';
 export type Screen = 'list' | 'create' | 'detail' | 'history';
 
@@ -6,6 +7,8 @@ export interface Counter {
   id: number;
   name: string;
   type: CounterType;
+  /** Only meaningful when type === 'custom': which history behavior it follows. */
+  customMode?: TrackingMode;
   max: number;
   value: number;
   history?: Record<string, number>;

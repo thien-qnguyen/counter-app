@@ -1,7 +1,6 @@
 import type { Counter, Theme } from '../types';
-import { TYPE_LABELS, UNIT_LABELS } from '../themes';
 import { buildGauge } from '../gauge';
-import { todayKey } from '../counterLogic';
+import { todayKey, typeLabel, unitLabel, trackingModeOf } from '../counterLogic';
 
 interface Props {
   counter: Counter;
@@ -22,7 +21,7 @@ interface Props {
 
 export function DetailScreen({ counter, theme: t, showResetConfirm, showDeleteConfirm, onBack, onIncrement, onDecrement, onRequestReset, onConfirmReset, onCancelReset, onOpenHistory, onRequestDelete, onConfirmDelete, onCancelDelete }: Props) {
   const g = buildGauge(counter.max, counter.value, t);
-  const hasHistory = counter.type !== 'custom';
+  const hasHistory = trackingModeOf(counter) !== 'none';
   const todayCount = hasHistory ? (counter.history?.[todayKey()] ?? 0) : null;
 
   return (
@@ -33,7 +32,7 @@ export function DetailScreen({ counter, theme: t, showResetConfirm, showDeleteCo
         </div>
         <div style={{ minWidth: 0, flex: 1 }}>
           <div style={{ fontSize: 17.5, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{counter.name}</div>
-          <div style={{ fontSize: 11.5, color: t.accent, letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600 }}>{TYPE_LABELS[counter.type]}</div>
+          <div style={{ fontSize: 11.5, color: t.accent, letterSpacing: 1, textTransform: 'uppercase', fontWeight: 600 }}>{typeLabel(counter)}</div>
         </div>
         {hasHistory && (
           <div onClick={onOpenHistory} style={{ width: 36, height: 36, borderRadius: 10, background: t.face, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
@@ -97,12 +96,12 @@ export function DetailScreen({ counter, theme: t, showResetConfirm, showDeleteCo
 
         <div style={{ marginTop: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <div style={{ fontSize: 58, lineHeight: 1, fontFamily: "'Titillium Web',sans-serif", fontWeight: 300, color: '#f3f6f9', letterSpacing: 0.5 }}>{counter.value}</div>
-          <div style={{ marginTop: 6, fontSize: 13, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(235,240,245,0.4)', fontWeight: 400 }}>/ {counter.max} {UNIT_LABELS[counter.type]}</div>
+          <div style={{ marginTop: 6, fontSize: 13, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(235,240,245,0.4)', fontWeight: 400 }}>/ {counter.max} {unitLabel(counter)}</div>
           {hasHistory && (
             <div style={{ marginTop: 10, fontSize: 12, letterSpacing: 0.5, color: t.accent, fontWeight: 500 }}>
-              {counter.type === 'daily'
+              {trackingModeOf(counter) === 'daily'
                 ? (todayCount ? 'Đã điểm danh hôm nay' : 'Chưa điểm danh hôm nay')
-                : `Hôm nay: ${todayCount} ${UNIT_LABELS[counter.type]}`}
+                : `Hôm nay: ${todayCount} ${unitLabel(counter)}`}
             </div>
           )}
         </div>
