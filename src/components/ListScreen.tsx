@@ -1,6 +1,6 @@
 import type { Counter, Theme } from '../types';
-import { TYPE_LABELS } from '../themes';
 import { buildGauge } from '../gauge';
+import { typeLabel } from '../counterLogic';
 
 interface Props {
   counters: Counter[];
@@ -62,7 +62,7 @@ export function ListScreen({ counters, theme: t, onOpen, onCreate }: Props) {
               >
                 <MiniGauge counter={c} t={t} />
                 <div style={{ marginTop: 8, fontSize: 14, fontWeight: 600, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>{c.name}</div>
-                <div style={{ fontSize: 10.5, color: 'rgba(238,241,243,0.45)', marginTop: 1, letterSpacing: 0.3, textTransform: 'uppercase' }}>{TYPE_LABELS[c.type]}</div>
+                <div style={{ fontSize: 10.5, color: 'rgba(238,241,243,0.45)', marginTop: 1, letterSpacing: 0.3, textTransform: 'uppercase' }}>{typeLabel(c)}</div>
                 <div style={{ marginTop: 8, width: '100%', background: '#0c0d0f', border: `1px solid ${t.ringBorder}`, borderRadius: 8, padding: '5px 0', textAlign: 'center' }}>
                   <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 14, fontWeight: 700, color: t.accent }}>{c.value}</span>
                   <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 11, color: 'rgba(238,241,243,0.4)' }}> / {c.max}</span>

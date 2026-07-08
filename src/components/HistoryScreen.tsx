@@ -1,6 +1,5 @@
 import type { Counter, Theme } from '../types';
-import { UNIT_LABELS } from '../themes';
-import { formatDateLabel } from '../counterLogic';
+import { formatDateLabel, unitLabel } from '../counterLogic';
 
 interface Props {
   counter: Counter;
@@ -34,7 +33,7 @@ export function HistoryScreen({ counter, theme: t, onBack, onDeleteEntry }: Prop
           <div key={key} style={{ background: t.face, border: `1px solid ${t.ringBorder}`, borderRadius: 14, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
             <div>
               <div style={{ fontSize: 15, fontWeight: 500 }}>{formatDateLabel(key)}</div>
-              <div style={{ fontSize: 12.5, color: 'rgba(238,241,243,0.5)', marginTop: 2 }}>{count} {UNIT_LABELS[counter.type]}</div>
+              <div style={{ fontSize: 12.5, color: 'rgba(238,241,243,0.5)', marginTop: 2 }}>{count} {unitLabel(counter)}</div>
             </div>
             <button
               onClick={() => onDeleteEntry(key)}

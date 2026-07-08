@@ -6,18 +6,25 @@ import { CreateScreen } from './components/CreateScreen';
 import { DetailScreen } from './components/DetailScreen';
 import { HistoryScreen } from './components/HistoryScreen';
 import { VariantPicker } from './components/VariantPicker';
-import type { CounterType, Variant } from './types';
-import { applyIncrement, applyDecrement, applyReset, deleteHistoryEntry } from './counterLogic';
+import type { Counter, CounterType, TrackingMode, Variant } from './types';
+import { applyIncrement, applyDecrement, applyReset, deleteHistoryEntry, computeTotal, LEGACY_DATE } from './counterLogic';
 
 export default function App() {
   const { state, setState } = useCounters();
   const theme = THEMES[state.variant];
   const selected = state.counters.find(c => c.id === state.selectedId) ?? state.counters[0];
 
-  function handleCreate(name: string, type: CounterType, max: number) {
+  function handleCreate(name: string, type: CounterType, max: number, initialValue: number, mode: TrackingMode) {
     const id = state.nextId;
+    const counter: Counter =
+      mode === 'none'
+        ? { id, name, type, max, value: initialValue, customMode: type === 'custom' ? 'none' : undefined }
+        : (() => {
+            const history: Record<string, number> = initialValue > 0 ? { [LEGACY_DATE]: initialValue } : {};
+            return { id, name, type, max, value: Math.min(max, computeTotal(history)), history, customMode: type === 'custom' ? mode : undefined };
+          })();
     setState(s => ({
-      counters: [...s.counters, { id, name, type, max, value: 0, history: {} }],
+      counters: [...s.counters, counter],
       nextId: id + 1,
       screen: 'detail',
       selectedId: id,
